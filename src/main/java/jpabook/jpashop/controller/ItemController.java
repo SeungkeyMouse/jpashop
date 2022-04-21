@@ -63,16 +63,25 @@ public class ItemController {
 
     @PostMapping("items/{itemId}/edit")//수정요청 post : itemId를 수정권한에 대해서 보안적으로 체크
     public String updateItem(@ModelAttribute("form") BookForm form) {
-        Book book = new Book();
         //ctrl 두번 누르고 방향키로 쫙 복사 ㄱㄱㄱ, ctrl shift u는 그 글자 UpperCase변환
-        book.setId(form.getId());
-        book.setName(form.getName());
-        book.setPrice(form.getPrice());
-        book.setStockQuantity(form.getStockQuantity());
-        book.setAuthor(form.getAuthor());
-        book.setIsbn(form.getIsbn());
+//        Book book = new Book();
+//        book.setId(form.getId());//한번 db에 들어갔다 나온애="준영속"엔티티
+//        book.setName(form.getName());
+//        book.setPrice(form.getPrice());
+//        book.setStockQuantity(form.getStockQuantity());
+//        book.setAuthor(form.getAuthor());
+//        book.setIsbn(form.getIsbn());
 
-        itemService.saveItem(book);
+        //이런 준용속 엔티티 수정 넣어도 원래는 안바뀜=>
+        // 1. 변경감지 -- itemService.class --> param에서 값 수정하면 인지함함        // 2. merge 사용
+
+        // 2. merge --> 아래처럼 saveItem하면 ItemRepository.class에서 merge로 넘김
+//        itemService.saveItem(book);
+
+        //컨트롤러에서 많은 엔티티생성하지말자 깔끔하게 아래처럼 서비스로 넘기자
+        itemService.updateItem(form.getId(), form.getName(), form.getPrice());
+
+
         return "redirect:/items";
     }
 }
